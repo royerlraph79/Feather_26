@@ -71,6 +71,8 @@ struct SettingsView: View {
 
 // MARK: - View extension
 extension SettingsView {
+
+#if false
     @ViewBuilder
     private func _feedback() -> some View {
         Section {
@@ -84,31 +86,33 @@ extension SettingsView {
             }
             
             Button(.localized("Submit Feedback"), systemImage: "safari") {
-				let bugAction: UIAlertAction = .init(title: .localized("Bug Report"), style: .default) { _ in
-					UIApplication.open(_makeGitHubIssueURL(url: _githubUrl))
-				}
-				
-				let chooseAction: UIAlertAction = .init(title: .localized("Other"), style: .default) { _ in
-					UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
-				}
-				
-				UIAlertController.showAlertWithCancel(
-					title: .localized("Submit Feedback"),
-					message: nil,
-					actions: [bugAction, chooseAction]
-				)
+                let bugAction: UIAlertAction = .init(title: .localized("Bug Report"), style: .default) { _ in
+                    UIApplication.open(_makeGitHubIssueURL(url: _githubUrl))
+                }
+                
+                let chooseAction: UIAlertAction = .init(title: .localized("Other"), style: .default) { _ in
+                    UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
+                }
+                
+                UIAlertController.showAlertWithCancel(
+                    title: .localized("Submit Feedback"),
+                    message: nil,
+                    actions: [bugAction, chooseAction]
+                )
             }
             Button(.localized("GitHub Repository"), systemImage: "safari") {
                 UIApplication.open(_githubUrl)
             }
-			Button(.localized("Join Us on Discord"), systemImage: "safari") {
-				UIApplication.open(_discordServer)
-			}
+            Button(.localized("Join Us on Discord"), systemImage: "safari") {
+                UIApplication.open(_discordServer)
+            }
         } footer: {
             Text(.localized("If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information."))
         }
     }
-    
+#endif
+
+}    
     @ViewBuilder
     private func _directories() -> some View {
         NBSection(.localized("Misc")) {
