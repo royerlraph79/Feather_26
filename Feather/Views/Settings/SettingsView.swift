@@ -27,8 +27,9 @@ struct SettingsView: View {
                 SettingsDonationCellView(site: _donationsUrl)
                 #endif
                 
-                // Feedback section disabled safely
+                #if false
                 _feedback()
+                #endif
                 
                 Section {
                     NavigationLink(destination: AppearanceView()) {
@@ -73,11 +74,45 @@ struct SettingsView: View {
 // MARK: - View extension
 extension SettingsView {
 
-    // ✅ Feedback section disabled safely
+#if false
     @ViewBuilder
     private func _feedback() -> some View {
-        EmptyView()
+        Section {
+            NavigationLink(destination: AboutView()) {
+                Label {
+                    Text(verbatim: .localized("About %@", arguments: Bundle.main.name))
+                } icon: {
+                    Image(uiImage: AppIconView.altImage(_currentIcon))
+                        .appIconStyle(size: 23)
+                }
+            }
+            
+            Button(.localized("Submit Feedback"), systemImage: "safari") {
+                let bugAction: UIAlertAction = .init(title: .localized("Bug Report"), style: .default) { _ in
+                    UIApplication.open(_makeGitHubIssueURL(url: _githubUrl))
+                }
+                
+                let chooseAction: UIAlertAction = .init(title: .localized("Other"), style: .default) { _ in
+                    UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
+                }
+                
+                UIAlertController.showAlertWithCancel(
+                    title: .localized("Submit Feedback"),
+                    message: nil,
+                    actions: [bugAction, chooseAction]
+                )
+            }
+            Button(.localized("GitHub Repository"), systemImage: "safari") {
+                UIApplication.open(_githubUrl)
+            }
+            Button(.localized("Join Us on Discord"), systemImage: "safari") {
+                UIApplication.open(_discordServer)
+            }
+        } footer: {
+            Text(.localized("If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information."))
+        }
     }
+#endif
 
     @ViewBuilder
     private func _directories() -> some View {
