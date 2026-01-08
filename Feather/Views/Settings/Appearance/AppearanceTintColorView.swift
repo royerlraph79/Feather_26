@@ -9,24 +9,23 @@ import SwiftUI
 
 // MARK: - View
 struct AppearanceTintColorView: View {
-	@AppStorage("Feather.userTintColor") private var selectedColorHex: String = "#B496DC"
-	private let tintOptions: [(name: String, hex: String)] = [
-		("Default", 		"#B496DC"),
-		("Classic", 		"#848ef9"),
-		("Red",             "#FF0000"),
-		("Berry",   		"#ff7a83"),
-		("Cool Blue", 		"#4161F1"),
-		("Fuchsia", 		"#FF00FF"),
-		("Protokolle", 		"#4CD964"),
-		("Aidoku", 			"#FF2D55"),
-		("Clock", 			"#FF9500"),
-		("Peculiar", 		"#4860e8"),
-		("Very Peculiar", 	"#5394F7"),
-		("Emily",			"#e18aab")
-	]
+	@AppStorage("Feather.userTintColor") private var selectedColorHex: String = "#848ef9"
 
-	@AppStorage("com.apple.SwiftUI.IgnoreSolariumLinkedOnCheck")
-	private var _ignoreSolariumLinkedOnCheck: Bool = false
+	private let tintOptions: [(name: String, hex: String)] = [
+		// Upstream defaults
+		("Default",        "#848ef9"),
+		("V2",             "#B496DC"),
+		("Red",            "#FF0000"),
+		("Berry",          "#ff7a83"),
+		("Cool Blue",      "#4161F1"),
+		("Fuchsia",        "#FF00FF"),
+		("Protokolle",     "#4CD964"),
+		("Aidoku",         "#FF2D55"),
+		("Clock",          "#FF9500"),
+		("Peculiar",       "#4860e8"),
+		("Very Peculiar",  "#5394F7"),
+		("Emily",          "#e18aab")
+	]
 
 	// MARK: Body
 	var body: some View {
@@ -34,7 +33,14 @@ struct AppearanceTintColorView: View {
 			LazyHGrid(rows: [GridItem(.fixed(100))], spacing: 12) {
 				ForEach(tintOptions, id: \.hex) { option in
 					let color = Color(hex: option.hex)
-					let cornerRadius = _ignoreSolariumLinkedOnCheck ? 28.0 : 10.5
+					let cornerRadius = {
+						if #available(iOS 26.0, *) {
+							28.0
+						} else {
+							10.5
+						}
+					}()
+
 					VStack(spacing: 8) {
 						Circle()
 							.fill(color)
