@@ -202,18 +202,39 @@ struct InstallPreviewView: View {
 	) -> Task<Void, Never> {
 
 		Task.detached(priority: .background) {
+<<<<<<< HEAD
 			while !Task.isCancelled {
 				let rawProgress = await UIApplication.installProgress(for: bundleID) ?? 0.0
 				let progress = normalizeInstallProgress(rawProgress)
 
 				Logger.misc.info("Install for id: \(bundleID)")
 				Logger.misc.info("Install progress: \(progress)")
+=======
+			var hasStarted = false
+
+			while !Task.isCancelled {
+				let rawProgress = await UIApplication.installProgress(for: bundleID) ?? 0.0
+
+				if rawProgress > 0 {
+					hasStarted = true
+				}
+
+				let progress = await hasStarted
+					? _normalizeInstallProgress(rawProgress)
+					: 0.0
+
+				Logger.misc.info("Install progress for \(bundleID): \(progress)")
+>>>>>>> 1e6fe3a (Feather: Optimize for Liquid Glass (SDK 26) (#560))
 
 				await MainActor.run {
 					viewModel.installProgress = progress
 				}
 
+<<<<<<< HEAD
 				if rawProgress >= 0.9 {
+=======
+				if hasStarted && rawProgress == 0 {
+>>>>>>> 1e6fe3a (Feather: Optimize for Liquid Glass (SDK 26) (#560))
 					await MainActor.run {
 						viewModel.installProgress = 1.0
 						viewModel.status = .completed(.success(()))
@@ -226,8 +247,13 @@ struct InstallPreviewView: View {
 		}
 	}
 
+<<<<<<< HEAD
 	private func normalizeInstallProgress(_ rawProgress: Double) -> Double {
 		let normalized = (rawProgress - 0.6) / 0.3
 		return min(1.0, max(0.0, normalized))
+=======
+	private func _normalizeInstallProgress(_ rawProgress: Double) -> Double {
+		min(1.0, max(0.0, (rawProgress - 0.6) / 0.3))
+>>>>>>> 1e6fe3a (Feather: Optimize for Liquid Glass (SDK 26) (#560))
 	}
 }

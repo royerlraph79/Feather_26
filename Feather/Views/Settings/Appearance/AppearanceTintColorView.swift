@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - View
 struct AppearanceTintColorView: View {
 	@AppStorage("Feather.userTintColor") private var selectedColorHex: String = "#848ef9"
+<<<<<<< HEAD
 
 	private let tintOptions: [(name: String, hex: String)] = [
 		// Upstream defaults
@@ -27,6 +28,21 @@ struct AppearanceTintColorView: View {
 		("Emily",          "#e18aab")
 	]
 
+=======
+	private let tintOptions: [(name: String, hex: String)] = [
+		("Default", 		"#848ef9"),
+		("V2", 				"#B496DC"),
+		("Berry",   		"#ff7a83"),
+		("Cool Blue", 		"#4161F1"),
+		("Fuchsia", 		"#FF00FF"),
+		("Protokolle", 		"#4CD964"),
+		("Aidoku", 			"#FF2D55"),
+		("Clock", 			"#FF9500"),
+		("Peculiar", 		"#4860e8"),
+		("Very Peculiar", 	"#5394F7"),
+		("Emily",			"#e18aab")
+	]
+>>>>>>> 1e6fe3a (Feather: Optimize for Liquid Glass (SDK 26) (#560))
 	// MARK: Body
 	var body: some View {
 		ScrollView(.horizontal, showsIndicators: false) {
@@ -40,7 +56,10 @@ struct AppearanceTintColorView: View {
 							10.5
 						}
 					}()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1e6fe3a (Feather: Optimize for Liquid Glass (SDK 26) (#560))
 					VStack(spacing: 8) {
 						Circle()
 							.fill(color)
