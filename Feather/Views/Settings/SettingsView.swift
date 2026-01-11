@@ -36,27 +36,25 @@ struct SettingsView: View {
     
     private let _donationsUrl = "https://github.com/sponsors/khcrysalis"
     private let _githubUrl = "https://github.com/khcrysalis/Feather"
-    private let _discordServer = "https://discord.gg/TYnUDJkG66"
+	private let _discordServer = "https://discord.gg/TYnUDJkG66"
     
     // MARK: Body
     var body: some View {
         NBNavigationView(.localized("Settings")) {
             Form {
-                #if false
+				#if !NIGHTLY && !DEBUG
                 SettingsDonationCellView(site: _donationsUrl)
-                #endif
+				#endif
                 
-                #if false
                 _feedback()
-                #endif
                 
                 Section {
                     NavigationLink(destination: AppearanceView()) {
                         Label(.localized("Appearance"), systemImage: "paintbrush")
                     }
-                    NavigationLink(destination: AppIconView(currentIcon: $_currentIcon)) {
-                        Label(.localized("App Icon"), systemImage: "app.badge")
-                    }
+					NavigationLink(destination: AppIconView(currentIcon: $_currentIcon)) {
+						Label(.localized("App Icon"), systemImage: "app.badge")
+					}
                 }
                 
                 NBSection(.localized("Certificates")) {
@@ -106,8 +104,6 @@ struct SettingsView: View {
 
 // MARK: - View extension
 extension SettingsView {
-
-#if false
     @ViewBuilder
     private func _feedback() -> some View {
         Section {
@@ -121,32 +117,31 @@ extension SettingsView {
             }
             
             Button(.localized("Submit Feedback"), systemImage: "safari") {
-                let bugAction: UIAlertAction = .init(title: .localized("Bug Report"), style: .default) { _ in
-                    UIApplication.open(_makeGitHubIssueURL(url: _githubUrl))
-                }
-                
-                let chooseAction: UIAlertAction = .init(title: .localized("Other"), style: .default) { _ in
-                    UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
-                }
-                
-                UIAlertController.showAlertWithCancel(
-                    title: .localized("Submit Feedback"),
-                    message: nil,
-                    actions: [bugAction, chooseAction]
-                )
+				let bugAction: UIAlertAction = .init(title: .localized("Bug Report"), style: .default) { _ in
+					UIApplication.open(_makeGitHubIssueURL(url: _githubUrl))
+				}
+				
+				let chooseAction: UIAlertAction = .init(title: .localized("Other"), style: .default) { _ in
+					UIApplication.open(URL(string: "\(_githubUrl)/issues/new/choose")!)
+				}
+				
+				UIAlertController.showAlertWithCancel(
+					title: .localized("Submit Feedback"),
+					message: nil,
+					actions: [bugAction, chooseAction]
+				)
             }
             Button(.localized("GitHub Repository"), systemImage: "safari") {
                 UIApplication.open(_githubUrl)
             }
-            Button(.localized("Join Us on Discord"), systemImage: "safari") {
-                UIApplication.open(_discordServer)
-            }
+			Button(.localized("Join Us on Discord"), systemImage: "safari") {
+				UIApplication.open(_discordServer)
+			}
         } footer: {
             Text(.localized("If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information."))
         }
     }
-#endif
-
+    
     @ViewBuilder
     private func _directories() -> some View {
         NBSection(.localized("Misc")) {
@@ -166,7 +161,7 @@ extension SettingsView {
     
     private func _makeGitHubIssueURL(url: String) -> String {
         var configurationSection = "### App Configuration:\n"
-        
+		
         switch UserDefaults.standard.integer(forKey: "Feather.installationMethod") {
         case 0: // Server
             let serverMethod = UserDefaults.standard.integer(forKey: "Feather.serverMethod")
@@ -186,29 +181,29 @@ extension SettingsView {
         }
         
         let body = """
-        ### Device Information
-        - Device: `\(MobileGestalt().getStringForName("PhysicalHardwareNameString") ?? "Unknown")`
-        - iOS Version: `\(UIDevice.current.systemVersion)`
-        - App Version: `\(Bundle.main.version)`
-        
-        \(configurationSection)
-        
-        ### Issue Description
-        <!-- Describe your issue here -->
-        
-        ### Steps to Reproduce
-        1. 
-        2. 
-        3. 
-        
-        ### Expected Behavior
-        
-        ### Actual Behavior
-        """
+		### Device Information
+		- Device: `\(MobileGestalt().getStringForName("PhysicalHardwareNameString") ?? "Unknown")`
+		- iOS Version: `\(UIDevice.current.systemVersion)`
+		- App Version: `\(Bundle.main.version)`
+		
+		\(configurationSection)
+		
+		### Issue Description
+		<!-- Describe your issue here -->
+		
+		### Steps to Reproduce
+		1. 
+		2. 
+		3. 
+		
+		### Expected Behavior
+		
+		### Actual Behavior
+		"""
         let encodedTitle = "[Bug] replace this with a descriptive title "
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+			.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let encodedBody = body
-            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+			.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         return "\(url)/issues/new?template=bug.yml&title=\(encodedTitle)&text=\(encodedBody)"
     }
 }
