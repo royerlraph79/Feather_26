@@ -1,43 +1,50 @@
-name: Create New Release
+name: Build Feather IPA
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      
-      - name: Use Xcode 26.2
-        run: |
-          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Compile Feather
-        run: | 
-          agvtool new-version -all $(git rev-parse HEAD)
-          make
-          mkdir upload
-          mv packages/* upload/
+    - name: Set up keychain (optional for signing)
+      run: |
+        security create-keychain -p "" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "" build.keychain
+        security set-keychain-settings
 
-      - name: Get Version
-        id: get_version
-        run: |
-          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Payload/*.app/Info.plist)
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Clean and build project
+      run: |
+        xcodebuild clean \
+          -workspace Feather.xcworkspace \
+          -scheme Feather \
+          -configuration Release
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Feather v${{ env.VERSION }}
-          tag_name: v${{ env.VERSION }}
-          files: |
-            upload/*ipa
-          generate_release_notes: true
-          fail_on_unmatched_files: true
-          draft: true
-        env:
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        xcodebuild archive \
+          -workspace Feather.xcworkspace \
+          -scheme Feather \
+          -configuration Release \
+          -archivePath $PWD/build/Feather.xcarchive \
+          -destination 'generic/platform=iOS' \
+          CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive \
+          -archivePath $PWD/build/Feather.xcarchive \
+          -exportOptionsPlist ExportOptions.plist \
+          -exportPath $PWD/build/export
+
+    - name: Upload IPA as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Feather-ipa
+        path: build/export/*.ipa
